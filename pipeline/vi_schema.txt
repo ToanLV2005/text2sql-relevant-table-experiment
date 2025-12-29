@@ -1,0 +1,364 @@
+=== TABLE ===
+Table: khach_hang
+Description: Lưu thông tin khách hàng (tài khoản người dùng) trong hệ thống thương mại điện tử.
+Schema:
+- khach_hang_id UUID
+- ho_ten TEXT
+- email TEXT
+- so_dien_thoai TEXT
+- ngay_sinh DATE
+- gioi_tinh TEXT
+- trang_thai TEXT
+- ngay_tao TIMESTAMP
+- ngay_cap_nhat TIMESTAMP
+Keys:
+- Primary Key: khach_hang_id
+- Unique: email
+- Unique: so_dien_thoai
+
+=== TABLE ===
+Table: dia_chi_khach_hang
+Description: Danh sách địa chỉ giao hàng của khách hàng (một khách hàng có thể có nhiều địa chỉ).
+Schema:
+- dia_chi_id UUID
+- khach_hang_id UUID
+- ten_nguoi_nhan TEXT
+- so_dien_thoai_nhan TEXT
+- dia_chi_1 TEXT
+- dia_chi_2 TEXT
+- phuong_xa TEXT
+- quan_huyen TEXT
+- tinh_thanh TEXT
+- ma_buu_chinh TEXT
+- mac_dinh BOOLEAN
+- ngay_tao TIMESTAMP
+Keys:
+- Primary Key: dia_chi_id
+- Foreign Key: khach_hang_id -> khach_hang.khach_hang_id
+- Index: khach_hang_id
+
+=== TABLE ===
+Table: danh_muc_san_pham
+Description: Phân loại sản phẩm theo danh mục (hỗ trợ cây danh mục bằng danh_muc_cha_id).
+Schema:
+- danh_muc_id UUID
+- danh_muc_cha_id UUID
+- ten_danh_muc TEXT
+- mo_ta TEXT
+- trang_thai TEXT
+- ngay_tao TIMESTAMP
+Keys:
+- Primary Key: danh_muc_id
+- Foreign Key: danh_muc_cha_id -> danh_muc_san_pham.danh_muc_id (self-reference)
+- Index: danh_muc_cha_id
+
+=== TABLE ===
+Table: thuong_hieu
+Description: Thông tin thương hiệu (brand) của sản phẩm.
+Schema:
+- thuong_hieu_id UUID
+- ten_thuong_hieu TEXT
+- quoc_gia TEXT
+- trang_thai TEXT
+- ngay_tao TIMESTAMP
+Keys:
+- Primary Key: thuong_hieu_id
+- Unique: ten_thuong_hieu
+
+=== TABLE ===
+Table: nha_ban
+Description: Thông tin nhà bán hàng (seller/merchant) trên sàn.
+Schema:
+- nha_ban_id UUID
+- ten_cua_hang TEXT
+- ma_so_thue TEXT
+- email_lien_he TEXT
+- so_dien_thoai_lien_he TEXT
+- dia_chi_kinh_doanh TEXT
+- trang_thai TEXT
+- ngay_tao TIMESTAMP
+Keys:
+- Primary Key: nha_ban_id
+- Unique: ma_so_thue
+- Unique: email_lien_he
+
+=== TABLE ===
+Table: san_pham
+Description: Sản phẩm “mức cha” (SPU) do nhà bán đăng; SKU nằm ở bảng bien_the_san_pham.
+Schema:
+- san_pham_id UUID
+- nha_ban_id UUID
+- danh_muc_id UUID
+- thuong_hieu_id UUID
+- ten_san_pham TEXT
+- mo_ta TEXT
+- trang_thai TEXT
+- ngay_tao TIMESTAMP
+- ngay_cap_nhat TIMESTAMP
+Keys:
+- Primary Key: san_pham_id
+- Foreign Key: nha_ban_id -> nha_ban.nha_ban_id
+- Foreign Key: danh_muc_id -> danh_muc_san_pham.danh_muc_id
+- Foreign Key: thuong_hieu_id -> thuong_hieu.thuong_hieu_id
+- Index: nha_ban_id
+- Index: danh_muc_id
+- Index: thuong_hieu_id
+
+=== TABLE ===
+Table: bien_the_san_pham
+Description: Biến thể sản phẩm (SKU) theo màu/size…; giá và mã SKU quản lý ở đây.
+Schema:
+- sku_id UUID
+- san_pham_id UUID
+- ma_sku TEXT
+- mau_sac TEXT
+- kich_co TEXT
+- gia_niem_yet DECIMAL
+- gia_ban DECIMAL
+- tien_te TEXT
+- can_nang_gram INT
+- trang_thai TEXT
+- ngay_tao TIMESTAMP
+Keys:
+- Primary Key: sku_id
+- Foreign Key: san_pham_id -> san_pham.san_pham_id
+- Unique: ma_sku
+- Index: san_pham_id
+
+=== TABLE ===
+Table: kho
+Description: Danh sách kho hàng (warehouse) phục vụ tồn kho và xuất hàng.
+Schema:
+- kho_id UUID
+- ten_kho TEXT
+- dia_chi TEXT
+- tinh_thanh TEXT
+- trang_thai TEXT
+- ngay_tao TIMESTAMP
+Keys:
+- Primary Key: kho_id
+- Unique: ten_kho
+
+=== TABLE ===
+Table: ton_kho
+Description: Tồn kho theo kho và SKU.
+Schema:
+- kho_id UUID
+- sku_id UUID
+- so_luong_kha_dung INT
+- so_luong_giu_cho INT
+- muc_ton_toi_thieu INT
+- ngay_cap_nhat TIMESTAMP
+Keys:
+- Primary Key: (kho_id, sku_id)
+- Foreign Key: kho_id -> kho.kho_id
+- Foreign Key: sku_id -> bien_the_san_pham.sku_id
+- Index: sku_id
+
+=== TABLE ===
+Table: don_hang
+Description: Đơn hàng của khách hàng; tổng tiền được tính từ chi_tiet_don_hang + phí/giảm giá.
+Schema:
+- don_hang_id UUID
+- khach_hang_id UUID
+- dia_chi_giao_id UUID
+- trang_thai TEXT
+- tong_tien_hang DECIMAL
+- phi_van_chuyen DECIMAL
+- giam_gia DECIMAL
+- thue DECIMAL
+- tong_thanh_toan DECIMAL
+- tien_te TEXT
+- ngay_dat TIMESTAMP
+- ngay_cap_nhat TIMESTAMP
+Keys:
+- Primary Key: don_hang_id
+- Foreign Key: khach_hang_id -> khach_hang.khach_hang_id
+- Foreign Key: dia_chi_giao_id -> dia_chi_khach_hang.dia_chi_id
+- Index: khach_hang_id
+- Index: ngay_dat
+
+=== TABLE ===
+Table: chi_tiet_don_hang
+Description: Dòng hàng (line item) trong đơn; mỗi SKU có thể xuất hiện nhiều lần ở các đơn khác nhau.
+Schema:
+- chi_tiet_id UUID
+- don_hang_id UUID
+- sku_id UUID
+- so_luong INT
+- don_gia DECIMAL
+- thanh_tien DECIMAL
+- giam_gia_dong DECIMAL
+Keys:
+- Primary Key: chi_tiet_id
+- Foreign Key: don_hang_id -> don_hang.don_hang_id
+- Foreign Key: sku_id -> bien_the_san_pham.sku_id
+- Index: don_hang_id
+- Index: sku_id
+
+=== TABLE ===
+Table: thanh_toan
+Description: Giao dịch thanh toán cho đơn hàng (một đơn có thể có nhiều lần thanh toán/thu hồi).
+Schema:
+- thanh_toan_id UUID
+- don_hang_id UUID
+- phuong_thuc TEXT
+- nha_cung_cap TEXT
+- ma_giao_dich TEXT
+- so_tien DECIMAL
+- tien_te TEXT
+- trang_thai TEXT
+- thoi_gian_thanh_toan TIMESTAMP
+Keys:
+- Primary Key: thanh_toan_id
+- Foreign Key: don_hang_id -> don_hang.don_hang_id
+- Unique: ma_giao_dich
+- Index: don_hang_id
+- Index: thoi_gian_thanh_toan
+
+=== TABLE ===
+Table: khuyen_mai
+Description: Chương trình khuyến mãi/coupon; áp dụng theo điều kiện.
+Schema:
+- khuyen_mai_id UUID
+- ma_khuyen_mai TEXT
+- loai TEXT
+- gia_tri DECIMAL
+- don_vi TEXT
+- dieu_kien_toi_thieu DECIMAL
+- gioi_han_su_dung INT
+- bat_dau TIMESTAMP
+- ket_thuc TIMESTAMP
+- trang_thai TEXT
+Keys:
+- Primary Key: khuyen_mai_id
+- Unique: ma_khuyen_mai
+- Index: bat_dau
+- Index: ket_thuc
+
+=== TABLE ===
+Table: ap_dung_khuyen_mai
+Description: Liên kết khuyến mãi với đơn hàng (mỗi đơn có thể áp nhiều mã, tùy chính sách).
+Schema:
+- don_hang_id UUID
+- khuyen_mai_id UUID
+- so_tien_giam DECIMAL
+- ngay_ap_dung TIMESTAMP
+Keys:
+- Primary Key: (don_hang_id, khuyen_mai_id)
+- Foreign Key: don_hang_id -> don_hang.don_hang_id
+- Foreign Key: khuyen_mai_id -> khuyen_mai.khuyen_mai_id
+- Index: khuyen_mai_id
+
+=== TABLE ===
+Table: van_chuyen
+Description: Thông tin vận chuyển cho đơn hàng (đơn có thể tách nhiều kiện).
+Schema:
+- van_chuyen_id UUID
+- don_hang_id UUID
+- don_vi_van_chuyen TEXT
+- ma_van_don TEXT
+- kho_xuat_id UUID
+- trang_thai TEXT
+- ngay_gui TIMESTAMP
+- ngay_giao_du_kien TIMESTAMP
+- ngay_giao_thuc_te TIMESTAMP
+- phi_van_chuyen DECIMAL
+Keys:
+- Primary Key: van_chuyen_id
+- Foreign Key: don_hang_id -> don_hang.don_hang_id
+- Foreign Key: kho_xuat_id -> kho.kho_id
+- Unique: ma_van_don
+- Index: don_hang_id
+- Index: kho_xuat_id
+
+=== TABLE ===
+Table: su_kien_van_don
+Description: Lịch sử trạng thái vận đơn (tracking events) theo thời gian.
+Schema:
+- su_kien_id UUID
+- van_chuyen_id UUID
+- thoi_gian TIMESTAMP
+- trang_thai TEXT
+- dia_diem TEXT
+- ghi_chu TEXT
+Keys:
+- Primary Key: su_kien_id
+- Foreign Key: van_chuyen_id -> van_chuyen.van_chuyen_id
+- Index: van_chuyen_id
+- Index: thoi_gian
+
+=== TABLE ===
+Table: tra_hang_hoan_tien
+Description: Yêu cầu trả hàng/hoàn tiền; có thể liên quan đến một hoặc nhiều dòng hàng.
+Schema:
+- tra_hang_id UUID
+- don_hang_id UUID
+- khach_hang_id UUID
+- ly_do TEXT
+- trang_thai TEXT
+- so_tien_hoan DECIMAL
+- tien_te TEXT
+- ngay_tao TIMESTAMP
+- ngay_duyet TIMESTAMP
+Keys:
+- Primary Key: tra_hang_id
+- Foreign Key: don_hang_id -> don_hang.don_hang_id
+- Foreign Key: khach_hang_id -> khach_hang.khach_hang_id
+- Index: don_hang_id
+- Index: khach_hang_id
+- Index: ngay_tao
+
+=== TABLE ===
+Table: chi_tiet_tra_hang
+Description: Chi tiết SKU trả lại và số lượng; gắn với yêu cầu trả hàng.
+Schema:
+- chi_tiet_tra_id UUID
+- tra_hang_id UUID
+- sku_id UUID
+- so_luong INT
+- tinh_trang_hang TEXT
+Keys:
+- Primary Key: chi_tiet_tra_id
+- Foreign Key: tra_hang_id -> tra_hang_hoan_tien.tra_hang_id
+- Foreign Key: sku_id -> bien_the_san_pham.sku_id
+- Index: tra_hang_id
+- Index: sku_id
+
+=== TABLE ===
+Table: danh_gia_san_pham
+Description: Đánh giá sản phẩm theo SKU từ khách hàng đã mua (rating + review).
+Schema:
+- danh_gia_id UUID
+- sku_id UUID
+- khach_hang_id UUID
+- don_hang_id UUID
+- diem INT
+- noi_dung TEXT
+- ngay_tao TIMESTAMP
+Keys:
+- Primary Key: danh_gia_id
+- Foreign Key: sku_id -> bien_the_san_pham.sku_id
+- Foreign Key: khach_hang_id -> khach_hang.khach_hang_id
+- Foreign Key: don_hang_id -> don_hang.don_hang_id
+- Unique: (sku_id, khach_hang_id, don_hang_id)
+- Index: sku_id
+- Index: ngay_tao
+
+=== TABLE ===
+Table: nhat_ky_he_thong
+Description: Nhật ký/audit log ghi lại hành động quan trọng (đăng nhập, đổi trạng thái đơn, hoàn tiền...).
+Schema:
+- nhat_ky_id UUID
+- loai_su_kien TEXT
+- doi_tuong TEXT
+- doi_tuong_id UUID
+- nguoi_thuc_hien TEXT
+- noi_dung TEXT
+- ip TEXT
+- thoi_gian TIMESTAMP
+Keys:
+- Primary Key: nhat_ky_id
+- Index: doi_tuong
+- Index: doi_tuong_id
+- Index: thoi_gian

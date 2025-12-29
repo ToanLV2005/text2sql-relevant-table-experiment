@@ -1,0 +1,117 @@
+{
+  "DOANH THU / GMV / SỐ LƯỢNG BÁN (luôn chọn don_hang)": [
+    "don_hang"
+  ],
+  "DOANH THU / GMV / SỐ LƯỢNG BÁN theo sản phẩm / SKU / số lượng": [
+    "don_hang",
+    "chi_tiet_don_hang",
+    "bien_the_san_pham"
+  ],
+  "DOANH THU / GMV / SỐ LƯỢNG BÁN cần tên sản phẩm / gắn nhà bán / gắn danh mục": [
+    "don_hang",
+    "chi_tiet_don_hang",
+    "bien_the_san_pham",
+    "san_pham"
+  ],
+  "DOANH THU / GMV / SỐ LƯỢNG BÁN theo danh mục": [
+    "don_hang",
+    "chi_tiet_don_hang",
+    "bien_the_san_pham",
+    "san_pham",
+    "danh_muc_san_pham"
+  ],
+  "DOANH THU / GMV / SỐ LƯỢNG BÁN theo nhà bán": [
+    "don_hang",
+    "chi_tiet_don_hang",
+    "bien_the_san_pham",
+    "san_pham",
+    "nha_ban"
+  ],
+
+  "THEO ĐƠN HÀNG / THỜI GIAN / KPI TỔNG": [
+    "don_hang"
+  ],
+
+  "THANH TOÁN: số tiền đã thanh toán / phương thức / theo tháng": [
+    "thanh_toan"
+  ],
+  "THANH TOÁN: so sánh với giá trị đơn hàng": [
+    "thanh_toan",
+    "don_hang"
+  ],
+
+  "KHUYẾN MÃI: chi tiết chương trình / mã / điều kiện": [
+    "khuyen_mai"
+  ],
+  "KHUYẾN MÃI: số tiền được giảm / áp dụng khi nào": [
+    "khuyen_mai",
+    "ap_dung_khuyen_mai"
+  ],
+  "KHUYẾN MÃI: tác động tới doanh thu / số lượng": [
+    "khuyen_mai",
+    "ap_dung_khuyen_mai",
+    "don_hang",
+    "chi_tiet_don_hang"
+  ],
+  "KHUYẾN MÃI: áp dụng lên sản phẩm (hỏi về sản phẩm được khuyến mãi)": [
+    "khuyen_mai",
+    "ap_dung_khuyen_mai",
+    "don_hang",
+    "chi_tiet_don_hang",
+    "bien_the_san_pham",
+    "san_pham"
+  ],
+
+  "HOÀN TIỀN / TRẢ HÀNG": [
+    "tra_hang_hoan_tien"
+  ],
+  "HOÀN TIỀN / TRẢ HÀNG theo sản phẩm / SKU": [
+    "tra_hang_hoan_tien",
+    "chi_tiet_tra_hang",
+    "bien_the_san_pham",
+    "san_pham"
+  ],
+  "HOÀN TIỀN / TRẢ HÀNG đối chiếu theo đơn": [
+    "tra_hang_hoan_tien",
+    "don_hang"
+  ],
+
+  "VẬN CHUYỂN / GIAO HÀNG / TRACKING": [
+    "van_chuyen"
+  ],
+  "VẬN CHUYỂN: mốc trạng thái / lịch sử vận đơn": [
+    "van_chuyen",
+    "su_kien_van_don"
+  ],
+  "VẬN CHUYỂN: % phí vận chuyển trên giá trị đơn": [
+    "van_chuyen",
+    "don_hang"
+  ],
+
+  "KHÁCH HÀNG: thông tin khách hàng": [
+    "khach_hang"
+  ],
+  "KHÁCH HÀNG: lịch sử mua / tần suất mua": [
+    "khach_hang",
+    "don_hang"
+  ],
+  "KHÁCH HÀNG: theo khu vực giao hàng": [
+    "khach_hang",
+    "don_hang",
+    "dia_chi_khach_hang"
+  ],
+
+  "SẢN PHẨM: sản phẩm đang hoạt động": [
+    "san_pham",
+    "bien_the_san_pham"
+  ],
+  "TỒN KHO: theo SKU / kho": [
+    "ton_kho",
+    "kho",
+    "bien_the_san_pham"
+  ],
+  "SẢN PHẨM: thông tin chi tiết hoặc phân tích theo từng sản phẩm": [
+    "bien_the_san_pham",
+    "san_pham"
+  ]
+}

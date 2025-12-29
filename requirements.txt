@@ -1,0 +1,24 @@
+# Core dependencies for relevant-table-pipeline
+python-dotenv==1.2.1
+requests==2.32.5
+
+# Vector database
+qdrant-client==1.16.2
+
+# Embedding models
+sentence-transformers==5.2.0
+transformers==4.57.3
+torch==2.9.1
+peft==0.17.1
+Pillow==10.4.0
+torchvision
+
+# Jinja2 for templating
+jinja2==3.1.6
+
+# Jupyter for notebook experiments
+jupyterlab==4.5.1
+ipykernel==7.1.0
+
+# Data processing
+numpy==2.3.5
