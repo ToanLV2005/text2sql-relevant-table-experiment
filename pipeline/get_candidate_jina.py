@@ -15,9 +15,8 @@ from qdrant_client import QdrantClient
 from dotenv import load_dotenv
 
 
-# =========================
+
 # Config from env
-# =========================
 load_dotenv()
 
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
@@ -35,9 +34,7 @@ MULTI_USING = os.getenv("MULTI_USING", "multi")
 PAYLOAD_DOC_KEY = os.getenv("PAYLOAD_DOC_KEY", "doc")
 
 
-# =========================
 # Init clients + model
-# =========================
 client = QdrantClient(url=QDRANT_URL)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -50,9 +47,7 @@ model = AutoModel.from_pretrained(
 TABLE_LINE_RE = re.compile(r"^\s*Table:\s*(.+?)\s*$", re.IGNORECASE)
 
 
-# =========================
 # Helpers
-# =========================
 def extract_table_name(payload_doc: str) -> str:
     """
     Full schema doc is stored in payload["doc"].
@@ -65,9 +60,7 @@ def extract_table_name(payload_doc: str) -> str:
     return m.group(1).strip() if m else first
 
 
-# -------------------------
 # Embedding
-# -------------------------
 def embed_single(text: str) -> List[float]:
     """
     Embed query into a single dense vector.
@@ -109,9 +102,7 @@ def embed_multi(text: str) -> List[List[float]]:
     return vec
 
 
-# -------------------------
 # Qdrant queries
-# -------------------------
 def query_single(vec_single: List[float], limit: int):
     """Query Qdrant using single vector."""
     res = client.query_points(
@@ -136,9 +127,6 @@ def query_multi(vec_multi: List[List[float]], limit: int):
     return res.points
 
 
-# =========================
-# Public APIs
-# =========================
 def _format_hits(pts) -> List[Dict[str, Any]]:
     """Format hits"""
     hits = []
@@ -185,10 +173,6 @@ def get_candidate_tables(query: str, top_k: int = TOP_K) -> Dict[str, Any]:
 
 if __name__ == "__main__":
     q = input("Query: ").strip()
-    if not q:
-        print("Empty query")
-        raise SystemExit(1)
-
     print("\n=== SINGLE VECTOR ===")
     out_single = get_candidate_tables(q, top_k=TOP_K)
     print(json.dumps(out_single, ensure_ascii=False, indent=2))

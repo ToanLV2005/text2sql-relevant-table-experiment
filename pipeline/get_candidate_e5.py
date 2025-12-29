@@ -2,7 +2,7 @@
 E5-based table retrieval 
 
 2 modes:
-  - get_candidate_pref()   : query-prefixed retrieval ("query: ...") 
+  - get_candidate_pref()   : query-prefix retrieval ("query: ...") 
   - get_candidate_nopref() : raw-query retrieval                     
 
 Both functions return a normalized result:

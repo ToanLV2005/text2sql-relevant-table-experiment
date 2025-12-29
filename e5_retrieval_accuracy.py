@@ -14,7 +14,6 @@ from pipeline.get_candidate_e5 import (
 )
 
 
-
 # Config
 TEST_SET_PATH = os.getenv("TEST_SET_PATH", "vi_test_set.txt")
 OUTPUT_FILE = os.getenv(
