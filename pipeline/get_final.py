@@ -37,6 +37,7 @@ LLM_MODEL = os.getenv("LLM_MODEL", "gpt-oss-120b")
 print(f"Using {LLM_MODEL}")
 print(f"USE_INSTRUCTION: {os.getenv('USE_INSTRUCTION', 'true')}")
 LLM_API_KEY = os.getenv("LLM_API_KEY")
+print("Get final key:", LLM_API_KEY)
 INSTRUCTION_LAN = os.getenv("INSTRUCTION_LAN","en")
 USE_INSTRUCTION = os.getenv("USE_INSTRUCTION", "true").lower() == "true"
 
