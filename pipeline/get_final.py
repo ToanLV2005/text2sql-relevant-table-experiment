@@ -18,10 +18,12 @@ from dotenv import load_dotenv
 
 try:
     from .get_candidate_e5 import get_candidate_pref as get_candidate_tables
-    from .instructions.system_prompt import SYSTEM_INSTRUCTION
+    from .instructions.system_prompt_vi import SYSTEM_INSTRUCTION as SYSTEM_VI
+    from .instructions.system_prompt_en import SYSTEM_INSTRUCTION as SYSTEM_EN
 except ImportError:
     from get_candidate_e5 import get_candidate_pref as get_candidate_tables
-    from instructions.system_prompt import SYSTEM_INSTRUCTION
+    from instructions.system_prompt_vi import SYSTEM_INSTRUCTION as SYSTEM_VI
+    from instructions.system_prompt_en import SYSTEM_INSTRUCTION as SYSTEM_EN
 
 load_dotenv()
 BASE_DIR = os.path.dirname(__file__)
@@ -33,12 +35,21 @@ TOP_K = int(os.getenv("TOP_K", "10"))
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://mkp-api.fptcloud.com/v1")
 LLM_MODEL = os.getenv("LLM_MODEL", "gpt-oss-120b")
 print(f"Using {LLM_MODEL}")
+print(f"USE_INSTRUCTION: {os.getenv('USE_INSTRUCTION', 'true')}")
 LLM_API_KEY = os.getenv("LLM_API_KEY")
+INSTRUCTION_LAN = os.getenv("INSTRUCTION_LAN","en")
+USE_INSTRUCTION = os.getenv("USE_INSTRUCTION", "true").lower() == "true"
 
+
+# Determine template path based on INSTRUCTION_LAN
+if INSTRUCTION_LAN == "en":
+    DEFAULT_TEMPLATE_NAME = "table_selection_template_en.txt"
+else:
+    DEFAULT_TEMPLATE_NAME = "table_selection_template_vi.txt"
 
 TEMPLATE_PATH = os.getenv(
     "TABLE_SELECTION_TEMPLATE_PATH",
-    os.path.join(BASE_DIR, "instructions", "table_selection_template.txt")
+    os.path.join(BASE_DIR, "instructions", DEFAULT_TEMPLATE_NAME)
 )
 
 TABLE_USAGE_INSTRUCTIONS_PATH = os.getenv(
@@ -274,15 +285,21 @@ def get_final_tables(query: str, top_k: int = TOP_K) -> dict:
             "keys": extract_pk_fk_from_doc(doc), 
         })
 
+    # Load instructions only if USE_INSTRUCTION is enabled
+    table_usage_instructions = load_table_usage_instructions() if USE_INSTRUCTION else {}
+
     user_prompt = render_template_vi(
         template_text=load_template_text(),
         query=query,
         tables=tables_for_template,
-        table_usage_instructions=load_table_usage_instructions(),
+        table_usage_instructions=table_usage_instructions,
     )
-
     
-    result = call_llm(SYSTEM_INSTRUCTION, user_prompt)
+
+    # Select system prompt based on INSTRUCTION_LAN
+    system_prompt = SYSTEM_EN if INSTRUCTION_LAN == "en" else SYSTEM_VI
+
+    result = call_llm(system_prompt, user_prompt)
     final_tables = validate_and_filter_final_tables(result, allowed_tables)
 
     if not final_tables and allowed_tables:

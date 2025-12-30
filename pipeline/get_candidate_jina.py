@@ -142,7 +142,6 @@ def _format_hits(pts) -> List[Dict[str, Any]]:
         )
     return hits
 
-
 def get_candidate_tables_single_vector(query: str, top_k: int = TOP_K) -> Dict[str, Any]:
     """
     Single vector retrieval
