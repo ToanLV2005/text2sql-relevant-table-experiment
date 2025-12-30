@@ -26,7 +26,7 @@ load_dotenv("pipeline/.env")
 TEST_SET_PATH = "vi_test_set.txt"
 LLM_TEST_FILE = os.getenv("LLM_TEST_OUT", "results/oss-120b-accuracy.txt")
 
-CANDIDATE_TOP_K = 10        # how many tables retrieved from Qdrant
+TOP_K = int(os.getenv("TOP_K", "10"))  # shared with get_final.py
 CANDIDATE_PRINT_TOP_N = 10 # how many to print in report
 
 INCLUDE_REASONING = False # set True to dump LLM reasoning_content
@@ -144,6 +144,11 @@ def main() -> None:
     precisions: List[float] = []
     failures: List[Tuple[int, str]] = []
 
+    # Token tracking
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_tokens = 0
+
     for i, tc in enumerate(tests, 1):
         query = tc.query
         gold_tables = tc.gold_tables
@@ -158,7 +163,7 @@ def main() -> None:
 
         # Get candidates from retrieval
         try:
-            cand = get_candidate_tables(query, top_k=CANDIDATE_TOP_K)
+            cand = get_candidate_tables(query, top_k=TOP_K)
             candidates = cand.get("candidates", []) or []
         except Exception as e:
             candidates = []
@@ -181,6 +186,12 @@ def main() -> None:
             result = get_final_tables(query)
             llm_tables = result.get("final_tables", []) or []
             reasoning = result.get("reasoning_content", "") or ""
+
+            # Accumulate token usage
+            token_usage = result.get("token_usage", {})
+            total_prompt_tokens += token_usage.get("prompt_tokens", 0)
+            total_completion_tokens += token_usage.get("completion_tokens", 0)
+            total_tokens += token_usage.get("total_tokens", 0)
         except Exception as e:
             failures.append((i, str(e)))
             llm_tables = []
@@ -220,9 +231,14 @@ def main() -> None:
     write_line(LLM_TEST_FILE, "=" * 100)
     write_line(LLM_TEST_FILE, "OVERALL AVERAGE METRICS (LLM)")
     write_line(LLM_TEST_FILE, "=" * 100)
-    write_line(LLM_TEST_FILE, f"Test cases:        {len(tests)}")
-    write_line(LLM_TEST_FILE, f"Average Recall:    {avg_recall:.4f}")
-    write_line(LLM_TEST_FILE, f"Average Precision: {avg_precision:.4f}")
+    write_line(LLM_TEST_FILE, f"Test cases:          {len(tests)}")
+    write_line(LLM_TEST_FILE, f"Average Recall:      {avg_recall:.4f}")
+    write_line(LLM_TEST_FILE, f"Average Precision:   {avg_precision:.4f}")
+    write_line(LLM_TEST_FILE, "")
+    write_line(LLM_TEST_FILE, "TOKEN USAGE")
+    write_line(LLM_TEST_FILE, f"Prompt tokens:       {total_prompt_tokens:,}")
+    write_line(LLM_TEST_FILE, f"Completion tokens:   {total_completion_tokens:,}")
+    write_line(LLM_TEST_FILE, f"Total tokens:        {total_tokens:,}")
     write_line(LLM_TEST_FILE, "=" * 100)
 
     if failures:

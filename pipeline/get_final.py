@@ -37,7 +37,6 @@ LLM_MODEL = os.getenv("LLM_MODEL", "gpt-oss-120b")
 print(f"Using {LLM_MODEL}")
 print(f"USE_INSTRUCTION: {os.getenv('USE_INSTRUCTION', 'true')}")
 LLM_API_KEY = os.getenv("LLM_API_KEY")
-print("Get final key:", LLM_API_KEY)
 INSTRUCTION_LAN = os.getenv("INSTRUCTION_LAN","en")
 USE_INSTRUCTION = os.getenv("USE_INSTRUCTION", "true").lower() == "true"
 
@@ -266,6 +265,14 @@ def call_llm(system_prompt: str, user_prompt: str) -> dict:
         result = extract_json_object(content) or {"raw": content}
 
     result["reasoning_content"] = reasoning
+
+    # Extract token usage
+    usage = resp.get("usage", {})
+    result["token_usage"] = {
+        "prompt_tokens": usage.get("prompt_tokens", 0),
+        "completion_tokens": usage.get("completion_tokens", 0),
+        "total_tokens": usage.get("total_tokens", 0),
+    }
     return result
 
 # =========================
@@ -310,6 +317,7 @@ def get_final_tables(query: str, top_k: int = TOP_K) -> dict:
         "query": query,
         "final_tables": final_tables,
         "reasoning_content": result.get("reasoning_content", ""),
+        "token_usage": result.get("token_usage", {}),
     }
 
 if __name__ == "__main__":
