@@ -27,7 +27,7 @@ load_dotenv("pipeline/.env")
 
 # Config
 TEST_SET_PATH = os.getenv("COLUMN_TEST_SET", "vi_test_set.txt")
-OUTPUT_FILE = os.getenv("COLUMN_TEST_OUT", "results/column_accuracy.txt")
+OUTPUT_FILE = os.getenv("COLUMN_TEST_OUT", "results/en_column_accuracy.txt")
 TOP_K = int(os.getenv("TOP_K", "10"))
 INCLUDE_REASONING = True
 

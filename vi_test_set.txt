@@ -15,8 +15,8 @@ Columns:
 - san_pham: san_pham_id, nha_ban_id
 - bien_the_san_pham: sku_id, san_pham_id
 - chi_tiet_don_hang: don_hang_id, sku_id, thanh_tien
-- don_hang: don_hang_id
-- tra_hang_hoan_tien: don_hang_id, so_tien_hoan
+- chi_tiet_tra_hang: tra_hang_id, sku_id, so_luong
+- tra_hang_hoan_tien: tra_hang_id, don_hang_id
 
 
 Query: Tổng số tiền đã thanh toán theo phương thức thanh toán mỗi tháng
@@ -37,16 +37,13 @@ Tables: don_hang, ap_dung_khuyen_mai, khuyen_mai
 Columns:
 - don_hang: don_hang_id
 - ap_dung_khuyen_mai: don_hang_id
-- khuyen_mai: khuyen_mai_id
 
 
 Query: Doanh thu tạo ra từ các sản phẩm được khuyến mãi
 Tables: ap_dung_khuyen_mai, don_hang, chi_tiet_don_hang, bien_the_san_pham
 Columns:
 - ap_dung_khuyen_mai: don_hang_id
-- don_hang: don_hang_id
-- chi_tiet_don_hang: don_hang_id, sku_id, thanh_tien
-- bien_the_san_pham: sku_id
+- chi_tiet_don_hang: don_hang_id, thanh_tien
 
 
 Query: Giá trị giảm giá trung bình theo từng mã khuyến mãi
@@ -62,8 +59,7 @@ Columns:
 - danh_muc_san_pham: danh_muc_id, ten_danh_muc
 - san_pham: san_pham_id, danh_muc_id
 - bien_the_san_pham: sku_id, san_pham_id
-- chi_tiet_don_hang: sku_id, don_hang_id, thanh_tien
-- don_hang: don_hang_id
+- chi_tiet_don_hang: sku_id, thanh_tien
 
 
 Query: Tỉ lệ hoàn tiền theo danh mục sản phẩm
@@ -72,16 +68,14 @@ Columns:
 - danh_muc_san_pham: danh_muc_id, ten_danh_muc
 - san_pham: san_pham_id, danh_muc_id
 - bien_the_san_pham: sku_id, san_pham_id
-- chi_tiet_don_hang: sku_id, don_hang_id
-- don_hang: don_hang_id
-- tra_hang_hoan_tien: don_hang_id, so_tien_hoan
+- chi_tiet_don_hang: sku_id, so_luong
+- chi_tiet_tra_hang: sku_id, so_luong
 
 
 Query: Những sản phẩm bị hoàn tiền nhiều nhất
 Tables: chi_tiet_tra_hang, tra_hang_hoan_tien, bien_the_san_pham, san_pham
 Columns:
-- chi_tiet_tra_hang: tra_hang_id, sku_id, so_luong
-- tra_hang_hoan_tien: tra_hang_id
+- chi_tiet_tra_hang: sku_id, so_luong
 - bien_the_san_pham: sku_id, san_pham_id
 - san_pham: san_pham_id, ten_san_pham
 
@@ -92,15 +86,15 @@ Columns:
 - nha_ban: nha_ban_id, ten_cua_hang
 - san_pham: san_pham_id, nha_ban_id
 - bien_the_san_pham: sku_id, san_pham_id
-- chi_tiet_don_hang: sku_id, don_hang_id, thanh_tien
-- don_hang: don_hang_id
+- chi_tiet_don_hang: sku_id, don_hang_id
+- don_hang: don_hang_id, tong_thanh_toan
 
 
 Query: Số lượng sản phẩm đang hoạt động theo từng nhà bán
 Tables: nha_ban, san_pham
 Columns:
 - nha_ban: nha_ban_id, ten_cua_hang
-- san_pham: san_pham_id, nha_ban_id, trang_thai
+- san_pham: nha_ban_id, trang_thai
 
 
 Query: Nhà bán có doanh thu giảm dần theo từng tháng
@@ -134,14 +128,12 @@ Columns:
 Query: Tỉ lệ mua lại của từng khách hàng
 Tables: khach_hang, don_hang
 Columns:
-- khach_hang: khach_hang_id, ho_ten
 - don_hang: don_hang_id, khach_hang_id
 
 
 Query: Khách hàng mua hàng từ nhiều nhà bán khác nhau
 Tables: don_hang, chi_tiet_don_hang, bien_the_san_pham, san_pham, khach_hang
 Columns:
-- khach_hang: khach_hang_id, ho_ten
 - don_hang: don_hang_id, khach_hang_id
 - chi_tiet_don_hang: don_hang_id, sku_id
 - bien_the_san_pham: sku_id, san_pham_id
