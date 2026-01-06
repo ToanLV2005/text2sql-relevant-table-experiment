@@ -1,53 +1,148 @@
 Query: Tổng doanh thu theo từng nhà bán trong quý trước
 Tables: nha_ban, san_pham, bien_the_san_pham, chi_tiet_don_hang, don_hang
+Columns:
+- nha_ban: nha_ban_id, ten_cua_hang
+- san_pham: san_pham_id, nha_ban_id
+- bien_the_san_pham: sku_id, san_pham_id
+- chi_tiet_don_hang: don_hang_id, sku_id, thanh_tien
+- don_hang: don_hang_id, ngay_dat
+
 
 Query: Top nhà bán theo doanh thu ròng sau khi trừ hoàn tiền
 Tables: nha_ban, san_pham, bien_the_san_pham, chi_tiet_don_hang, don_hang, tra_hang_hoan_tien
+Columns:
+- nha_ban: nha_ban_id, ten_cua_hang
+- san_pham: san_pham_id, nha_ban_id
+- bien_the_san_pham: sku_id, san_pham_id
+- chi_tiet_don_hang: don_hang_id, sku_id, thanh_tien
+- don_hang: don_hang_id
+- tra_hang_hoan_tien: don_hang_id, so_tien_hoan
+
 
 Query: Tổng số tiền đã thanh toán theo phương thức thanh toán mỗi tháng
-Tables: thanh_toan 
+Tables: thanh_toan
+Columns:
+- thanh_toan: phuong_thuc, so_tien, thoi_gian_thanh_toan
+
 
 Query: Chênh lệch giữa tổng đơn hàng và số tiền đã thanh toán theo từng đơn
 Tables: don_hang, thanh_toan
+Columns:
+- don_hang: don_hang_id, tong_thanh_toan
+- thanh_toan: don_hang_id, so_tien
+
 
 Query: Tác động của khuyến mãi lên số lượng đơn hàng
 Tables: don_hang, ap_dung_khuyen_mai, khuyen_mai
+Columns:
+- don_hang: don_hang_id
+- ap_dung_khuyen_mai: don_hang_id
+- khuyen_mai: khuyen_mai_id
+
 
 Query: Doanh thu tạo ra từ các sản phẩm được khuyến mãi
 Tables: ap_dung_khuyen_mai, don_hang, chi_tiet_don_hang, bien_the_san_pham
+Columns:
+- ap_dung_khuyen_mai: don_hang_id
+- don_hang: don_hang_id
+- chi_tiet_don_hang: don_hang_id, sku_id, thanh_tien
+- bien_the_san_pham: sku_id
+
 
 Query: Giá trị giảm giá trung bình theo từng mã khuyến mãi
 Tables: khuyen_mai, ap_dung_khuyen_mai
+Columns:
+- khuyen_mai: khuyen_mai_id, ma_khuyen_mai
+- ap_dung_khuyen_mai: khuyen_mai_id, so_tien_giam
+
 
 Query: Top danh mục sản phẩm theo tổng doanh thu bán hàng
 Tables: danh_muc_san_pham, san_pham, bien_the_san_pham, chi_tiet_don_hang, don_hang
+Columns:
+- danh_muc_san_pham: danh_muc_id, ten_danh_muc
+- san_pham: san_pham_id, danh_muc_id
+- bien_the_san_pham: sku_id, san_pham_id
+- chi_tiet_don_hang: sku_id, don_hang_id, thanh_tien
+- don_hang: don_hang_id
+
 
 Query: Tỉ lệ hoàn tiền theo danh mục sản phẩm
 Tables: danh_muc_san_pham, san_pham, bien_the_san_pham, chi_tiet_don_hang, don_hang, tra_hang_hoan_tien
+Columns:
+- danh_muc_san_pham: danh_muc_id, ten_danh_muc
+- san_pham: san_pham_id, danh_muc_id
+- bien_the_san_pham: sku_id, san_pham_id
+- chi_tiet_don_hang: sku_id, don_hang_id
+- don_hang: don_hang_id
+- tra_hang_hoan_tien: don_hang_id, so_tien_hoan
+
 
 Query: Những sản phẩm bị hoàn tiền nhiều nhất
 Tables: chi_tiet_tra_hang, tra_hang_hoan_tien, bien_the_san_pham, san_pham
+Columns:
+- chi_tiet_tra_hang: tra_hang_id, sku_id, so_luong
+- tra_hang_hoan_tien: tra_hang_id
+- bien_the_san_pham: sku_id, san_pham_id
+- san_pham: san_pham_id, ten_san_pham
+
 
 Query: Giá trị đơn hàng trung bình theo từng nhà bán
 Tables: san_pham, bien_the_san_pham, chi_tiet_don_hang, don_hang, nha_ban
+Columns:
+- nha_ban: nha_ban_id, ten_cua_hang
+- san_pham: san_pham_id, nha_ban_id
+- bien_the_san_pham: sku_id, san_pham_id
+- chi_tiet_don_hang: sku_id, don_hang_id, thanh_tien
+- don_hang: don_hang_id
+
 
 Query: Số lượng sản phẩm đang hoạt động theo từng nhà bán
 Tables: nha_ban, san_pham
+Columns:
+- nha_ban: nha_ban_id, ten_cua_hang
+- san_pham: san_pham_id, nha_ban_id, trang_thai
+
 
 Query: Nhà bán có doanh thu giảm dần theo từng tháng
 Tables: san_pham, bien_the_san_pham, chi_tiet_don_hang, don_hang, nha_ban
+Columns:
+- nha_ban: nha_ban_id, ten_cua_hang
+- san_pham: san_pham_id, nha_ban_id
+- bien_the_san_pham: sku_id, san_pham_id
+- chi_tiet_don_hang: sku_id, don_hang_id, thanh_tien
+- don_hang: don_hang_id, ngay_dat
+
 
 Query: Thời gian giao hàng trung bình theo đơn vị vận chuyển
 Tables: van_chuyen
+Columns:
+- van_chuyen: don_vi_van_chuyen, ngay_gui, ngay_giao_thuc_te
+
 
 Query: Chi phí vận chuyển chiếm bao nhiêu phần trăm giá trị đơn hàng
 Tables: don_hang
+Columns:
+- don_hang: tong_tien_hang, phi_van_chuyen
+
 
 Query: Những đơn hàng đã gửi nhưng chưa được giao
 Tables: van_chuyen
+Columns:
+- van_chuyen: don_hang_id, trang_thai, ngay_giao_thuc_te
+
 
 Query: Tỉ lệ mua lại của từng khách hàng
 Tables: khach_hang, don_hang
+Columns:
+- khach_hang: khach_hang_id, ho_ten
+- don_hang: don_hang_id, khach_hang_id
+
 
 Query: Khách hàng mua hàng từ nhiều nhà bán khác nhau
 Tables: don_hang, chi_tiet_don_hang, bien_the_san_pham, san_pham, khach_hang
+Columns:
+- khach_hang: khach_hang_id, ho_ten
+- don_hang: don_hang_id, khach_hang_id
+- chi_tiet_don_hang: don_hang_id, sku_id
+- bien_the_san_pham: sku_id, san_pham_id
+- san_pham: san_pham_id, nha_ban_id
