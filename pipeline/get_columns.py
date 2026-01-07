@@ -478,10 +478,6 @@ def get_final_columns(query: str, top_k: int = 10) -> dict:
     # Step 4: Validate columns
     validated_columns = validate_columns(result, allowed_columns)
 
-    # Fallback: if no valid columns, include all columns from selected tables
-    if not validated_columns:
-        validated_columns = allowed_columns
-
     # Step 5: Auto-add missing JOIN columns (FK/PK) for selected tables
     validated_columns = add_missing_join_columns(validated_columns, all_tables)
 

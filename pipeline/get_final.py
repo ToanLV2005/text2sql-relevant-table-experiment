@@ -227,9 +227,7 @@ def render_template_vi(
     )
     
 
-# =========================
 # LLM call
-# =========================
 def call_llm(system_prompt: str, user_prompt: str) -> dict:
     if not LLM_API_KEY:
         raise RuntimeError("LLM_API_KEY is missing")
@@ -275,9 +273,8 @@ def call_llm(system_prompt: str, user_prompt: str) -> dict:
     }
     return result
 
-# =========================
+
 # Main entry
-# =========================
 def get_final_tables(query: str, top_k: int = TOP_K) -> dict:
     cand = get_candidate_tables(query, top_k=top_k)
     candidates = cand.get("candidates", [])

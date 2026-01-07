@@ -190,6 +190,11 @@ def main() -> None:
     precisions: List[float] = []
     failures: List[Tuple[int, str]] = []
 
+    # Micro-average tracking (total counts across all queries)
+    total_gold_columns = 0
+    total_selected_columns = 0
+    total_matched_columns = 0
+
     # Token tracking
     total_table_prompt = 0
     total_table_completion = 0
@@ -245,6 +250,14 @@ def main() -> None:
         recalls.append(r)
         precisions.append(p)
 
+        # Accumulate counts for micro-average
+        for table, cols in tc.gold_columns.items():
+            total_gold_columns += len(cols)
+            if table in selected_columns:
+                total_matched_columns += len(set(selected_columns[table]) & set(cols))
+        for table, cols in selected_columns.items():
+            total_selected_columns += len(cols)
+
         write_line(OUTPUT_FILE, f"Column Recall:    {r:.3f}")
         write_line(OUTPUT_FILE, f"Column Precision: {p:.3f}")
         write_line(OUTPUT_FILE, "")
@@ -263,15 +276,29 @@ def main() -> None:
         write_line(OUTPUT_FILE, "")
 
     # Summary
-    avg_recall = sum(recalls) / len(recalls) if recalls else 0.0
-    avg_precision = sum(precisions) / len(precisions) if precisions else 0.0
+    # Macro-average (average of per-query metrics)
+    macro_recall = sum(recalls) / len(recalls) if recalls else 0.0
+    macro_precision = sum(precisions) / len(precisions) if precisions else 0.0
+
+    # Micro-average (total matched / total gold or selected)
+    avg_recall = total_matched_columns / total_gold_columns if total_gold_columns > 0 else 0.0
+    avg_precision = total_matched_columns / total_selected_columns if total_selected_columns > 0 else 0.0
 
     write_line(OUTPUT_FILE, "=" * 100)
     write_line(OUTPUT_FILE, "OVERALL METRICS (COLUMN SELECTION)")
     write_line(OUTPUT_FILE, "=" * 100)
     write_line(OUTPUT_FILE, f"Test cases:              {len(tests)}")
-    write_line(OUTPUT_FILE, f"Average Column Recall:   {avg_recall:.4f}")
-    write_line(OUTPUT_FILE, f"Average Column Precision:{avg_precision:.4f}")
+    write_line(OUTPUT_FILE, "")
+    write_line(OUTPUT_FILE, "MICRO-AVERAGE (weighted by column count):")
+    write_line(OUTPUT_FILE, f"  Total gold columns:    {total_gold_columns}")
+    write_line(OUTPUT_FILE, f"  Total selected columns:{total_selected_columns}")
+    write_line(OUTPUT_FILE, f"  Total matched columns: {total_matched_columns}")
+    write_line(OUTPUT_FILE, f"  Recall:                {avg_recall:.4f}")
+    write_line(OUTPUT_FILE, f"  Precision:             {avg_precision:.4f}")
+    write_line(OUTPUT_FILE, "")
+    write_line(OUTPUT_FILE, "MACRO-AVERAGE (average per query):")
+    write_line(OUTPUT_FILE, f"  Recall:                {macro_recall:.4f}")
+    write_line(OUTPUT_FILE, f"  Precision:             {macro_precision:.4f}")
     write_line(OUTPUT_FILE, "")
     write_line(OUTPUT_FILE, "TOKEN USAGE")
     write_line(OUTPUT_FILE, f"Table Selection:")
@@ -291,8 +318,8 @@ def main() -> None:
             write_line(OUTPUT_FILE, f"- Case #{idx}: {msg}")
 
     print(f"Results written to: {OUTPUT_FILE}")
-    print(f"Average Column Recall:    {avg_recall:.4f}")
-    print(f"Average Column Precision: {avg_precision:.4f}")
+    print(f"Average Recall:    {avg_recall:.4f}")
+    print(f"Average Precision: {avg_precision:.4f}")
 
 
 if __name__ == "__main__":
