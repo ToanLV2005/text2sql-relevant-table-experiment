@@ -1,0 +1,238 @@
+==============================
+BẢNG: khach_hang
+==============================
+khach_hang_id: Định danh duy nhất của khách hàng trong hệ thống.
+ho_ten: Họ và tên đầy đủ của khách hàng.
+email: Địa chỉ email đăng ký tài khoản (duy nhất).
+so_dien_thoai: Số điện thoại của khách hàng (duy nhất).
+ngay_sinh: Ngày sinh của khách hàng.
+gioi_tinh: Giới tính của khách hàng.
+trang_thai: Trạng thái tài khoản (hoạt động, khoá, ngừng sử dụng).
+ngay_tao: Thời điểm tạo tài khoản khách hàng.
+ngay_cap_nhat: Thời điểm cập nhật thông tin khách hàng gần nhất.
+
+==============================
+BẢNG: dia_chi_khach_hang
+==============================
+dia_chi_id: Định danh duy nhất của địa chỉ giao hàng.
+khach_hang_id: Khách hàng sở hữu địa chỉ này.
+ten_nguoi_nhan: Tên người nhận hàng.
+so_dien_thoai_nhan: Số điện thoại người nhận hàng.
+dia_chi_1: Địa chỉ chi tiết (số nhà, đường).
+dia_chi_2: Thông tin bổ sung địa chỉ (toà nhà, tầng).
+phuong_xa: Phường/xã.
+quan_huyen: Quận/huyện.
+tinh_thanh: Tỉnh/thành phố.
+ma_buu_chinh: Mã bưu chính.
+mac_dinh: Đánh dấu địa chỉ mặc định.
+ngay_tao: Thời điểm tạo địa chỉ.
+
+==============================
+BẢNG: danh_muc_san_pham
+==============================
+danh_muc_id: Định danh duy nhất của danh mục.
+danh_muc_cha_id: Danh mục cha (hỗ trợ cây danh mục).
+ten_danh_muc: Tên danh mục sản phẩm.
+mo_ta: Mô tả danh mục.
+trang_thai: Trạng thái danh mục.
+ngay_tao: Thời điểm tạo danh mục.
+
+==============================
+BẢNG: thuong_hieu
+==============================
+thuong_hieu_id: Định danh duy nhất của thương hiệu.
+ten_thuong_hieu: Tên thương hiệu (duy nhất).
+quoc_gia: Quốc gia xuất xứ thương hiệu.
+trang_thai: Trạng thái thương hiệu.
+ngay_tao: Thời điểm tạo thương hiệu.
+
+==============================
+BẢNG: nha_ban
+==============================
+nha_ban_id: Định danh duy nhất của nhà bán.
+ten_cua_hang: Tên cửa hàng.
+ma_so_thue: Mã số thuế (duy nhất).
+email_lien_he: Email liên hệ nhà bán.
+so_dien_thoai_lien_he: Số điện thoại liên hệ nhà bán.
+dia_chi_kinh_doanh: Địa chỉ kinh doanh.
+trang_thai: Trạng thái hoạt động của nhà bán.
+ngay_tao: Thời điểm tạo nhà bán.
+
+==============================
+BẢNG: san_pham
+==============================
+san_pham_id: Định danh sản phẩm (SPU).
+nha_ban_id: Nhà bán sở hữu sản phẩm.
+danh_muc_id: Danh mục sản phẩm.
+thuong_hieu_id: Thương hiệu sản phẩm.
+ten_san_pham: Tên sản phẩm.
+mo_ta: Mô tả sản phẩm.
+trang_thai: Trạng thái bán/hiển thị.
+ngay_tao: Thời điểm tạo sản phẩm.
+ngay_cap_nhat: Thời điểm cập nhật sản phẩm.
+
+==============================
+BẢNG: bien_the_san_pham
+==============================
+sku_id: Định danh biến thể (SKU).
+san_pham_id: Sản phẩm cha.
+ma_sku: Mã SKU (duy nhất).
+mau_sac: Màu sắc.
+kich_co: Kích cỡ.
+gia_niem_yet: Giá niêm yết.
+gia_ban: Giá bán thực tế.
+tien_te: Đơn vị tiền tệ.
+can_nang_gram: Trọng lượng (gram).
+trang_thai: Trạng thái biến thể.
+ngay_tao: Thời điểm tạo biến thể.
+
+==============================
+BẢNG: kho
+==============================
+kho_id: Định danh kho hàng.
+ten_kho: Tên kho.
+dia_chi: Địa chỉ kho.
+tinh_thanh: Tỉnh/thành phố kho đang được đặt.
+trang_thai: Trạng thái kho.
+ngay_tao: Thời điểm tạo kho.
+
+==============================
+BẢNG: ton_kho
+==============================
+kho_id: Kho chứa hàng.
+sku_id: Biến thể sản phẩm.
+so_luong_kha_dung: Số lượng có thể bán.
+so_luong_giu_cho: Số lượng đang giữ chỗ.
+muc_ton_toi_thieu: Mức tồn kho tối thiểu.
+ngay_cap_nhat: Thời điểm cập nhật tồn kho.
+
+==============================
+BẢNG: don_hang
+==============================
+don_hang_id: Định danh đơn hàng.
+khach_hang_id: Khách hàng đặt đơn.
+dia_chi_giao_id: Địa chỉ giao hàng.
+trang_thai: Trạng thái đơn hàng.
+tong_tien_hang: Tổng tiền hàng.
+phi_van_chuyen: Phí vận chuyển.
+giam_gia: Tổng giảm giá.
+thue: Thuế áp dụng.
+tong_thanh_toan: Tổng tiền phải thanh toán của khách hàng.
+tien_te: Đơn vị tiền tệ.
+ngay_dat: Thời điểm đặt hàng.
+ngay_cap_nhat: Thời điểm cập nhật đơn hàng.
+
+==============================
+BẢNG: chi_tiet_don_hang
+==============================
+chi_tiet_id: Định danh chi tiết đơn hàng.
+don_hang_id: Đơn hàng chứa dòng.
+sku_id: Biến thể được mua.
+so_luong: Số lượng mua.
+don_gia: Đơn giá.
+thanh_tien: Thành tiền.
+giam_gia_dong: Giảm giá theo dòng.
+
+==============================
+BẢNG: thanh_toan
+==============================
+thanh_toan_id: Định danh giao dịch thanh toán.
+don_hang_id: Đơn hàng liên quan.
+phuong_thuc: Phương thức thanh toán.
+nha_cung_cap: Nhà cung cấp thanh toán.
+ma_giao_dich: Mã giao dịch.
+so_tien: Số tiền thanh toán.
+tien_te: Đơn vị tiền tệ.
+trang_thai: Trạng thái thanh toán.
+thoi_gian_thanh_toan: Thời điểm thanh toán.
+
+==============================
+BẢNG: khuyen_mai
+==============================
+khuyen_mai_id: Định danh khuyến mãi.
+ma_khuyen_mai: Mã khuyến mãi.
+loai: Loại khuyến mãi.
+gia_tri: Giá trị giảm.
+don_vi: Đơn vị giảm.
+dieu_kien_toi_thieu: Giá trị đơn tối thiểu.
+gioi_han_su_dung: Số lượt sử dụng tối đa.
+bat_dau: Thời điểm bắt đầu.
+ket_thuc: Thời điểm kết thúc.
+trang_thai: Trạng thái khuyến mãi.
+
+==============================
+BẢNG: ap_dung_khuyen_mai
+==============================
+don_hang_id: Đơn hàng áp dụng khuyến mãi.
+khuyen_mai_id: Khuyến mãi được áp dụng.
+so_tien_giam: Số tiền được giảm.
+ngay_ap_dung: Thời điểm áp dụng.
+
+==============================
+BẢNG: van_chuyen
+==============================
+van_chuyen_id: Định danh vận chuyển.
+don_hang_id: Đơn hàng được vận chuyển.
+don_vi_van_chuyen: Đơn vị vận chuyển.
+ma_van_don: Mã vận đơn.
+kho_xuat_id: Kho xuất hàng.
+trang_thai: Trạng thái vận chuyển.
+ngay_gui: Ngày gửi hàng.
+ngay_giao_du_kien: Ngày giao dự kiến.
+ngay_giao_thuc_te: Ngày giao thực tế.
+phi_van_chuyen: Phí vận chuyển.
+
+==============================
+BẢNG: su_kien_van_don
+==============================
+su_kien_id: Định danh sự kiện vận đơn.
+van_chuyen_id: Vận chuyển liên quan.
+thoi_gian: Thời điểm sự kiện.
+trang_thai: Trạng thái vận đơn.
+dia_diem: Địa điểm ghi nhận.
+ghi_chu: Ghi chú.
+
+==============================
+BẢNG: tra_hang_hoan_tien
+==============================
+tra_hang_id: Định danh yêu cầu trả hàng/hoàn tiền.
+don_hang_id: Đơn hàng liên quan.
+khach_hang_id: Khách hàng yêu cầu.
+ly_do: Lý do trả hàng.
+trang_thai: Trạng thái xử lý.
+so_tien_hoan: Số tiền hoàn.
+tien_te: Đơn vị tiền tệ.
+ngay_tao: Thời điểm tạo yêu cầu.
+ngay_duyet: Thời điểm duyệt yêu cầu.
+
+==============================
+BẢNG: chi_tiet_tra_hang
+==============================
+chi_tiet_tra_id: Định danh chi tiết trả hàng.
+tra_hang_id: Yêu cầu trả hàng.
+sku_id: Biến thể được trả.
+so_luong: Số lượng trả.
+tinh_trang_hang: Tình trạng hàng.
+
+==============================
+BẢNG: danh_gia_san_pham
+==============================
+danh_gia_id: Định danh đánh giá.
+sku_id: Biến thể được đánh giá.
+khach_hang_id: Khách hàng đánh giá.
+don_hang_id: Đơn hàng đã mua.
+diem: Điểm đánh giá.
+noi_dung: Nội dung nhận xét.
+ngay_tao: Thời điểm tạo đánh giá.
+
+==============================
+BẢNG: nhat_ky_he_thong
+==============================
+nhat_ky_id: Định danh nhật ký hệ thống.
+loai_su_kien: Loại sự kiện.
+doi_tuong: Đối tượng bị tác động.
+doi_tuong_id: ID đối tượng bị tác động.
+nguoi_thuc_hien: Người/hệ thống thực hiện.
+noi_dung: Nội dung sự kiện.
+ip: Địa chỉ IP.
+thoi_gian: Thời điểm xảy ra.

@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(__file__)
 
 # Config from env
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://mkp-api.fptcloud.com/v1")
-LLM_MODEL = os.getenv("LLM_MODEL", "gpt-oss-120b")
+LLM_MODEL = os.getenv("COLUMN_SELECTION_LLM_MODEL", "gpt-oss-20b")
 LLM_API_KEY = os.getenv("LLM_API_KEY")
 INSTRUCTION_LAN = os.getenv("INSTRUCTION_LAN", "en")
 SCHEMA_TXT_FILE = os.getenv("SCHEMA_TXT_FILE", "vi_schema.txt")
@@ -51,7 +51,6 @@ DESC_RE = re.compile(r"^\s*Description:\s*(.+?)\s*$", re.IGNORECASE | re.MULTILI
 SCHEMA_START_RE = re.compile(r"^\s*Schema:\s*$", re.IGNORECASE | re.MULTILINE)
 COLUMN_RE = re.compile(r"^\s*-\s*(\w+)\s+(\w+.*?)\s*$")
 IDENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-# Pattern: "Foreign Key: column_name -> table.column"
 FK_RE = re.compile(r"Foreign Key:\s*(\w+)\s*->\s*(\w+)\.(\w+)", re.IGNORECASE)
 PK_RE = re.compile(r"Primary Key:\s*(\w+)", re.IGNORECASE)
 
@@ -251,8 +250,6 @@ def validate_columns(
     - Only keep tables that exist in allowed_tables
     - Only keep columns that exist in each table
     - Remove duplicates
-
-    Supports both old format {"tables": {...}} and new format {"results": [...]}
     """
     validated = {}
 

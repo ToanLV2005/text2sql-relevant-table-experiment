@@ -60,7 +60,8 @@ Description: {{ table.description }}
 
 Columns:
 {% for col in table.columns %}
-   - {{ col.name }} ({{ col.type }})
+   - {{ col.name }} ({{ col.type }}){% if col.description %}: {{ col.description }}{% endif %}
+
 {% endfor %}
 
 Keys:
