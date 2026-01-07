@@ -276,11 +276,6 @@ def main() -> None:
         write_line(OUTPUT_FILE, "")
 
     # Summary
-    # Macro-average (average of per-query metrics)
-    macro_recall = sum(recalls) / len(recalls) if recalls else 0.0
-    macro_precision = sum(precisions) / len(precisions) if precisions else 0.0
-
-    # Micro-average (total matched / total gold or selected)
     avg_recall = total_matched_columns / total_gold_columns if total_gold_columns > 0 else 0.0
     avg_precision = total_matched_columns / total_selected_columns if total_selected_columns > 0 else 0.0
 
@@ -289,16 +284,10 @@ def main() -> None:
     write_line(OUTPUT_FILE, "=" * 100)
     write_line(OUTPUT_FILE, f"Test cases:              {len(tests)}")
     write_line(OUTPUT_FILE, "")
-    write_line(OUTPUT_FILE, "MICRO-AVERAGE (weighted by column count):")
-    write_line(OUTPUT_FILE, f"  Total gold columns:    {total_gold_columns}")
-    write_line(OUTPUT_FILE, f"  Total selected columns:{total_selected_columns}")
-    write_line(OUTPUT_FILE, f"  Total matched columns: {total_matched_columns}")
+    write_line(OUTPUT_FILE, "AVERAGE:")
     write_line(OUTPUT_FILE, f"  Recall:                {avg_recall:.4f}")
     write_line(OUTPUT_FILE, f"  Precision:             {avg_precision:.4f}")
     write_line(OUTPUT_FILE, "")
-    write_line(OUTPUT_FILE, "MACRO-AVERAGE (average per query):")
-    write_line(OUTPUT_FILE, f"  Recall:                {macro_recall:.4f}")
-    write_line(OUTPUT_FILE, f"  Precision:             {macro_precision:.4f}")
     write_line(OUTPUT_FILE, "")
     write_line(OUTPUT_FILE, "TOKEN USAGE")
     write_line(OUTPUT_FILE, f"Table Selection:")
