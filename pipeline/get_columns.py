@@ -12,7 +12,7 @@ import os
 import json
 import re
 import requests
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from dotenv import load_dotenv
 
 try:
@@ -29,10 +29,11 @@ BASE_DIR = os.path.dirname(__file__)
 
 # Config from env
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://mkp-api.fptcloud.com/v1")
-LLM_MODEL = os.getenv("COLUMN_SELECTION_LLM_MODEL", "gpt-oss-20b")
+LLM_MODEL = os.getenv("LLM_MODEL", "gpt-oss-120b")
 LLM_API_KEY = os.getenv("LLM_API_KEY")
 INSTRUCTION_LAN = os.getenv("INSTRUCTION_LAN", "en")
 SCHEMA_TXT_FILE = os.getenv("SCHEMA_TXT_FILE", "vi_schema.txt")
+COLUMN_DESC_FILE = os.getenv("COLUMN_DESC_FILE", "column_descriptions.txt")
 
 # Determine template path based on INSTRUCTION_LAN
 if INSTRUCTION_LAN == "en":
@@ -60,6 +61,44 @@ def load_schema_file() -> str:
     schema_path = os.path.join(BASE_DIR, SCHEMA_TXT_FILE)
     with open(schema_path, "r", encoding="utf-8") as f:
         return f.read()
+
+
+def load_column_descriptions() -> Dict[str, Dict[str, str]]:
+    """
+    Load column descriptions from file.
+    Returns: {table_name: {column_name: description}}
+    """
+    desc_path = os.path.join(BASE_DIR, COLUMN_DESC_FILE)
+    if not os.path.exists(desc_path):
+        return {}
+
+    with open(desc_path, "r", encoding="utf-8") as f:
+        text = f.read()
+
+    descriptions = {}
+    current_table = None
+
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+
+        # Check for table header ("BẢNG: khach_hang")
+        if line.startswith("BẢNG:"):
+            current_table = line.split(":", 1)[1].strip()
+            descriptions[current_table] = {}
+        elif line.startswith("="):
+            # Skip separator lines
+            continue
+        elif current_table and ":" in line:
+            # Parse column description ("khach_hang_id: Định danh duy nhất...")
+            parts = line.split(":", 1)
+            if len(parts) == 2:
+                col_name = parts[0].strip()
+                col_desc = parts[1].strip()
+                descriptions[current_table][col_name] = col_desc
+
+    return descriptions
 
 
 def parse_all_tables(schema_text: str) -> Dict[str, Dict]:
@@ -145,18 +184,40 @@ def parse_all_tables(schema_text: str) -> Dict[str, Dict]:
     return tables
 
 
-def get_tables_with_columns(table_names: List[str], all_tables: Dict[str, Dict]) -> List[Dict]:
+def get_tables_with_columns(
+    table_names: List[str],
+    all_tables: Dict[str, Dict],
+    column_descriptions: Optional[Dict[str, Dict[str, str]]] = None
+) -> List[Dict]:
     """
     Given a list of table names, return their full schema info for the template.
+    Optionally includes column descriptions if provided.
     """
+    if column_descriptions is None:
+        column_descriptions = {}
+
     result = []
     for name in table_names:
         if name in all_tables:
             info = all_tables[name]
+            table_col_descs = column_descriptions.get(name, {})
+
+            # Add description to each column
+            columns_with_desc = []
+            for col in info["columns"]:
+                col_data = {
+                    "name": col["name"],
+                    "type": col["type"],
+                }
+                # Add description if available
+                if col["name"] in table_col_descs:
+                    col_data["description"] = table_col_descs[col["name"]]
+                columns_with_desc.append(col_data)
+
             result.append({
                 "name": name,
                 "description": info["description"],
-                "columns": info["columns"],
+                "columns": columns_with_desc,
                 "keys": info["keys"],
             })
     return result
@@ -393,7 +454,8 @@ def get_final_columns(query: str, top_k: int = 10) -> dict:
     # Step 2: Load schema and get table info
     schema_text = load_schema_file()
     all_tables = parse_all_tables(schema_text)
-    tables_with_columns = get_tables_with_columns(final_tables, all_tables)
+    column_descriptions = load_column_descriptions()
+    tables_with_columns = get_tables_with_columns(final_tables, all_tables, column_descriptions)
 
     # Build allowed columns map for validation
     allowed_columns = {}
@@ -453,7 +515,8 @@ def get_columns_from_tables(query: str, final_tables: List[str]) -> dict:
     # Load schema and get table info
     schema_text = load_schema_file()
     all_tables = parse_all_tables(schema_text)
-    tables_with_columns = get_tables_with_columns(final_tables, all_tables)
+    column_descriptions = load_column_descriptions()
+    tables_with_columns = get_tables_with_columns(final_tables, all_tables, column_descriptions)
 
     # Build allowed columns map
     allowed_columns = {}

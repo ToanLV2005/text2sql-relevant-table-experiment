@@ -130,7 +130,7 @@ don_hang_id: Đơn hàng chứa dòng.
 sku_id: Biến thể được mua.
 so_luong: Số lượng mua.
 don_gia: Đơn giá.
-thanh_tien: Thành tiền.
+thanh_tien: tổng tiền bán của dòng hàng, đơn giá x số lượng .
 giam_gia_dong: Giảm giá theo dòng.
 
 ==============================
