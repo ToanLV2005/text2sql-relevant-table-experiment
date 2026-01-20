@@ -1,8 +1,8 @@
 """
 get_columns.py
 
-Pipeline step (7):
-  - Take final tables from table selection (step 6)
+Pipeline step:
+  - Take final tables from table selection 
   - Match table names back to their full schema (with columns)
   - Ask LLM to select the relevant columns
   - Validate & filter LLM output
@@ -34,6 +34,11 @@ LLM_API_KEY = os.getenv("LLM_API_KEY")
 INSTRUCTION_LAN = os.getenv("INSTRUCTION_LAN", "en")
 SCHEMA_TXT_FILE = os.getenv("SCHEMA_TXT_FILE", "vi_schema.txt")
 COLUMN_DESC_FILE = os.getenv("COLUMN_DESC_FILE", "column_descriptions.txt")
+
+# Prompt repition config
+USE_PROMPT_REPETITION = os.getenv("USE_COLUMN_PROMPT_REPETITION", "false").lower() == "true"
+PROMPT_REPETITION_COUNT = int(os.getenv("PROMPT_REPETITION_COUNT", "2"))
+PROMPT_REPETITION_SEPARATOR = os.getenv("PROMPT_REPETITION_SEPARATOR", "\n\n")
 
 # Determine template path based on INSTRUCTION_LAN
 if INSTRUCTION_LAN == "en":
@@ -255,10 +260,34 @@ def extract_json_object(text: str) -> Optional[dict]:
         return None
 
 
-def call_llm(system_prompt: str, user_prompt: str) -> dict:
+def apply_prompt_repetition(prompt: str, repeat_count: int = 2, separator: str = "\n\n") -> str:
+    """
+    Args:
+        prompt: The original prompt text
+        repeat_count: Number of times to repeat the prompt (default: 2)
+        separator: Separator between repetitions (default: "\n\n")
+
+    Returns:
+        The repeated prompt string
+    """
+    if repeat_count <= 1:
+        return prompt
+    return separator.join([prompt] * repeat_count)
+
+
+def call_llm(system_prompt: str, user_prompt: str, use_repetition: bool = False) -> dict:
     """Call the LLM API."""
     if not LLM_API_KEY:
         raise RuntimeError("LLM_API_KEY is missing")
+
+    # Apply prompt repetition if enabled
+    final_user_prompt = user_prompt
+    if use_repetition:
+        final_user_prompt = apply_prompt_repetition(
+            user_prompt,
+            repeat_count=PROMPT_REPETITION_COUNT,
+            separator=PROMPT_REPETITION_SEPARATOR
+        )
 
     url = f"{LLM_BASE_URL.rstrip('/')}/chat/completions"
     headers = {
@@ -270,7 +299,7 @@ def call_llm(system_prompt: str, user_prompt: str) -> dict:
         "model": LLM_MODEL,
         "messages": [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
+            {"role": "user", "content": final_user_prompt},
         ],
         "temperature": 0,
         "max_tokens": 2048,
@@ -473,7 +502,7 @@ def get_final_columns(query: str, top_k: int = 10) -> dict:
     # Select system prompt
     system_prompt = SYSTEM_COL_EN if INSTRUCTION_LAN == "en" else SYSTEM_COL_VI
 
-    result = call_llm(system_prompt, user_prompt)
+    result = call_llm(system_prompt, user_prompt, use_repetition=USE_PROMPT_REPETITION)
 
     # Step 4: Validate columns
     validated_columns = validate_columns(result, allowed_columns)
@@ -528,7 +557,7 @@ def get_columns_from_tables(query: str, final_tables: List[str]) -> dict:
     )
 
     system_prompt = SYSTEM_COL_EN if INSTRUCTION_LAN == "en" else SYSTEM_COL_VI
-    result = call_llm(system_prompt, user_prompt)
+    result = call_llm(system_prompt, user_prompt, use_repetition=USE_PROMPT_REPETITION)
 
     # Validate columns
     validated_columns = validate_columns(result, allowed_columns)
@@ -551,6 +580,7 @@ def get_columns_from_tables(query: str, final_tables: List[str]) -> dict:
 if __name__ == "__main__":
     print(f"Using model: {LLM_MODEL}")
     print(f"Language: {INSTRUCTION_LAN}")
+    print(f"USE_PROMPT_REPETITION: {USE_PROMPT_REPETITION}")
     print("-" * 50)
 
     q = input("Query: ").strip()

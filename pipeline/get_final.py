@@ -34,11 +34,19 @@ TOP_K = int(os.getenv("TOP_K", "10"))
 
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://mkp-api.fptcloud.com/v1")
 LLM_MODEL = os.getenv("TABLE_SELECTION_LLM_MODEL", "gpt-oss-20b")
-print(f"Using {LLM_MODEL} for table selection")
+print(f"Using {LLM_MODEL}")
 print(f"USE_INSTRUCTION: {os.getenv('USE_INSTRUCTION', 'true')}")
+
 LLM_API_KEY = os.getenv("LLM_API_KEY")
 INSTRUCTION_LAN = os.getenv("INSTRUCTION_LAN","en")
 USE_INSTRUCTION = os.getenv("USE_INSTRUCTION", "true").lower() == "true"
+
+# Prompt repetition config (from Google Research paper)
+# When enabled, repeats the user prompt to improve non-reasoning LLM performance
+USE_PROMPT_REPETITION = os.getenv("USE_TABLE_PROMPT_REPETITION", "false").lower() == "true"
+PROMPT_REPETITION_COUNT = int(os.getenv("PROMPT_REPETITION_COUNT", "2"))  # How many times to repeat
+PROMPT_REPETITION_SEPARATOR = os.getenv("PROMPT_REPETITION_SEPARATOR", "\n\n")  # Separator between repetitions
+print(f"USE_PROMPT_REPETITION: {USE_PROMPT_REPETITION}")
 
 
 # Determine template path based on INSTRUCTION_LAN
@@ -227,11 +235,43 @@ def render_template_vi(
     )
     
 
+# =========================
+# Prompt repetition helper
+# =========================
+def apply_prompt_repetition(prompt: str, repeat_count: int = 2, separator: str = "\n\n") -> str:
+    """
+    Apply prompt repetition technique from Google Research paper.
+    Repeats the prompt multiple times to allow all tokens to attend to each other.
+
+    Args:
+        prompt: The original prompt text
+        repeat_count: Number of times to repeat the prompt (default: 2)
+        separator: Separator between repetitions (default: "\n\n")
+
+    Returns:
+        The repeated prompt string
+    """
+    if repeat_count <= 1:
+        return prompt
+    return separator.join([prompt] * repeat_count)
+
+
+# =========================
 # LLM call
-def call_llm(system_prompt: str, user_prompt: str) -> dict:
+# =========================
+def call_llm(system_prompt: str, user_prompt: str, use_repetition: bool = False) -> dict:
     if not LLM_API_KEY:
         raise RuntimeError("LLM_API_KEY is missing")
-    
+
+    # Apply prompt repetition if enabled
+    final_user_prompt = user_prompt
+    if use_repetition:
+        final_user_prompt = apply_prompt_repetition(
+            user_prompt,
+            repeat_count=PROMPT_REPETITION_COUNT,
+            separator=PROMPT_REPETITION_SEPARATOR
+        )
+
     url = f"{LLM_BASE_URL.rstrip('/')}/chat/completions"
     headers = {
         "Content-Type": "application/json",
@@ -242,7 +282,7 @@ def call_llm(system_prompt: str, user_prompt: str) -> dict:
         "model": LLM_MODEL,
         "messages": [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
+            {"role": "user", "content": final_user_prompt},
         ],
         "temperature": 0,
         "max_tokens": 1024,
@@ -273,8 +313,9 @@ def call_llm(system_prompt: str, user_prompt: str) -> dict:
     }
     return result
 
-
+# =========================
 # Main entry
+# =========================
 def get_final_tables(query: str, top_k: int = TOP_K) -> dict:
     cand = get_candidate_tables(query, top_k=top_k)
     candidates = cand.get("candidates", [])
@@ -304,7 +345,7 @@ def get_final_tables(query: str, top_k: int = TOP_K) -> dict:
     # Select system prompt based on INSTRUCTION_LAN
     system_prompt = SYSTEM_EN if INSTRUCTION_LAN == "en" else SYSTEM_VI
 
-    result = call_llm(system_prompt, user_prompt)
+    result = call_llm(system_prompt, user_prompt, use_repetition=USE_PROMPT_REPETITION)
     final_tables = validate_and_filter_final_tables(result, allowed_tables)
 
     if not final_tables and allowed_tables:
